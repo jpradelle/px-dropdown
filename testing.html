@@ -1,0 +1,56 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="parent-example">
+    <template>
+        <child-example></child-example>
+    </template>
+</dom-module>
+<dom-module id="child-example">
+    <template>
+        <button id="clickie" on-click="_clicked">click me</button>
+    </template>
+</dom-module>
+<script>
+    class ParentElement extends Polymer.Element {
+        static get is() { return 'parent-example'; }
+        static get config() { 
+            return {
+            properties: {
+
+            } 
+            }
+         }
+        constructor() {
+            super();
+        }
+        connectedCallback() {
+            super.connectedCallback();
+            // this._boundProvideCellSize = this._provideCellSize.bind(this);
+            document.addEventListener('px-dropdown-request-size', this._boundProvideCellSize);
+        }
+        _boundProvideCellSize(evt){
+            console.log("works");
+        }
+    }
+    class ChildElement extends Polymer.Element{
+        static get is() { return 'child-example'; }
+        static get config() { 
+            return {
+            properties: {
+
+            } 
+            }
+        }
+        constructor() {
+            super();
+        }
+        _clicked(){
+            console.log("clicked")
+            this.dispatchEvent(new CustomEvent('px-dropdown-request-size'), {bubbles: true});
+        }
+
+    }
+
+customElements.define(ParentElement.is, ParentElement);
+customElements.define(ChildElement.is, ChildElement);
+</script>
