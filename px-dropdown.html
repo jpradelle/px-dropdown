@@ -5,7 +5,7 @@
 -->
 <!--<link rel="import" href="../polymer/polymer.html" />-->
 <link rel="import" href="../polymer/polymer-element.html">
-<!--<link rel="import" href="px-dropdown-content.html" />-->
+<link rel="import" href="px-dropdown-content.html" />
 <link rel="import" href="px-dropdown-chevron.html" />
 <link rel="import" href="px-dropdown-text.html" />
 <!--
@@ -61,9 +61,11 @@ Custom property | Description | Default
     class$="{{_dropcellClass(opened, hover, disabled)}} flex flex--middle dropcell"
     id="dropcell">
       <px-dropdown-text class$="{{_disabledClass(disabled)}}" display-value="{{displayValue}}" max-cont-character-width="{{_maxCharWidth}}" tooltip-value={{value}}></px-dropdown-text>
-      <template is="dom-if" if="{{_hideChevron(hideChevron)}}">
-        <px-dropdown-chevron class$="px-dropdown-chevron {{_disabledClass(disabled)}}"></px-dropdown-chevron>
-      </template>
+      <dom-if if="{{_hideChevron(hideChevron)}}">
+        <template >
+          <px-dropdown-chevron class$="px-dropdown-chevron {{_disabledClass(disabled)}}"></px-dropdown-chevron>
+        </template>
+      </dom-if>
     </div>
     <div style="position:relative;">
       <slot name="px-dropdown-content"></slot>

@@ -1,56 +1,105 @@
+<html>
+    
+</html>
+
+<!-- Import Polymer 2.0 -->
 <link rel="import" href="../polymer/polymer-element.html">
 
+<!-- Create `dom-module` for each element -->
+<dom-module id="grandparent-example">
+  <template>
+    <parent-example></parent-example>
+  </template>
+</dom-module>
+
 <dom-module id="parent-example">
-    <template>
-        <child-example></child-example>
-    </template>
+  <template>
+    <child-example></child-example>
+  </template>
 </dom-module>
+
 <dom-module id="child-example">
-    <template>
-        <button id="clickie" on-click="_clicked">click me</button>
-    </template>
+  <template>
+    <button id="clickButton" on-click="fireClickedEvent">click me</button>
+  </template>
 </dom-module>
+
+<!-- Use new class-based system to define each web component -->
 <script>
-    class ParentElement extends Polymer.Element {
-        static get is() { return 'parent-example'; }
-        static get config() { 
-            return {
-            properties: {
+class GrandparentElement extends Polymer.Element {
+  static get is() { return 'grandparent-example'; }
+  static get config() { 
+    return { properties: {} }
+  }
+  
+  // Attach event listeners to yourself in the constructor. As long as the event
+  // listeners are named correctly, they don't need to be explicitly attached
+  // then disattached in the `connectedCallback` and `disconnectedCallback`.
+  constructor() {
+    // Always call `super()` in constructor
+    super();
+    
+    // Attach event listener to `this` and pass the event to a method bound to the
+    // `this` value of the grandparent.
+    this.addEventListener('my-custom-click-event', this.grandparentEventHandler.bind(this));
+  }
 
-            } 
-            }
-         }
-        constructor() {
-            super();
-        }
-        connectedCallback() {
-            super.connectedCallback();
-            // this._boundProvideCellSize = this._provideCellSize.bind(this);
-            document.addEventListener('px-dropdown-request-size', this._boundProvideCellSize);
-        }
-        _boundProvideCellSize(evt){
-            console.log("works");
-        }
-    }
-    class ChildElement extends Polymer.Element{
-        static get is() { return 'child-example'; }
-        static get config() { 
-            return {
-            properties: {
+  // Event handler gets the `evt` and can check `evt.path` to determine its origin
+  // Note that event retargeting will set the `evt.target` to always be the scope
+  // of the element currently reading it (in this case, `evt.target` will be
+  // `grandparent-element`)
+  grandparentEventHandler(evt) {
+    // Handle the `evt` ...
+    console.log('Grandparent handling the event...');
+  }
+}
 
-            } 
-            }
-        }
-        constructor() {
-            super();
-        }
-        _clicked(){
-            console.log("clicked")
-            this.dispatchEvent(new CustomEvent('px-dropdown-request-size'), {bubbles: true});
-        }
+class ParentElement extends Polymer.Element {
+  static get is() { return 'parent-example'; }
+  static get config() { 
+    return { properties: {} }
+  }
+  constructor() {
+    super();
+    this.addEventListener('my-custom-click-event', this.parentEventHandler.bind(this));
+  }
 
-    }
+  // We will also get the `evt` here. If it was cancellable, we could cancel it
+  // at this point and prevent it from bubbling up to the grandparent.
+  // Note that `evt.target` will be retargeted to the scope of `parent-element`.
+  parentEventHandler(evt) {
+    // Handle the `evt` ...
+    console.log('Parent handling the event...');
+  }
+}
 
+class ChildElement extends Polymer.Element{
+  static get is() { return 'child-example'; }
+  static get config() { 
+    return { properties: {} }
+  }
+  
+  constructor() {
+    super();
+  }
+
+  // We use declarative, Polymer-style binding in our template to bind the click
+  // event on a button element to this method.
+  fireClickedEvent(sourceEvt) {
+
+    // To fire an event that bubbles up the tree AND crossed the shadow root
+    // boundaries above, we call `this.dispatchEvent()`. We pass it a CustomEvent
+    // created with a name, and configured with the following settings:
+    // 
+    // {Boolean} bubbles - Specifies that the event should bubble up the DOM tree
+    // 
+    // {Boolean} composed - Specifies that the event should cross any shadow root
+    // boundaries and continue to bubble
+    this.dispatchEvent(new CustomEvent('my-custom-click-event', {bubbles: false, composed: true}));
+  }
+}
+
+customElements.define(GrandparentElement.is, GrandparentElement);
 customElements.define(ParentElement.is, ParentElement);
 customElements.define(ChildElement.is, ChildElement);
 </script>

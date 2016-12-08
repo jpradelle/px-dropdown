@@ -105,17 +105,15 @@ class PxDropdown extends Polymer.Element {
       },
       observers: [
         '_boundTargetChanged(boundTarget, isAttached)'
-      ],
-      listeners: {
-        'px-dropdown-flip': '_flipOpened',
-        'px-dropdown-request-size': '_provideCellSize',
-        'px-dropdown-value-changed': '_newTextValue',
-        'px-dropdown-max-width': '_newMaxContCharWidth'
-      }
+      ]
     }
   }
   constructor() {
     super();
+    this.addEventListener('px-dropdown-flip',this._flipOpened.bind(this));
+    this.addEventListener('px-dropdown-request-size',this._provideCellSize.bind(this));
+    this.addEventListener('px-dropdown-value-changed',this._newTextValue.bind(this));
+    this.addEventListener('px-dropdown-max-width',this._newMaxContCharWidth.bind(this));
     
   }
   connectedCallback() {
@@ -131,12 +129,6 @@ class PxDropdown extends Polymer.Element {
     if(!this.value && this.displayValue) {
       this.set('value', this.displayValue);
     }
-
-    this._boundFlipOpened = this._flipOpened.bind(this);
-    this.addEventListener('px-dropdown-flip', this._boundFlipOpened);
-
-    this._boundProvideCellSize = this._provideCellSize.bind(this);
-    this.addEventListener('px-dropdown-request-size', this._boundProvideCellSize);
   }
   disconnectedCallback(){
     var tapEvent = ('ontouchstart' in window) ? 'tap' : 'click';
@@ -146,11 +138,9 @@ class PxDropdown extends Polymer.Element {
     * This function is called when we have a newly selected value.
     */
     _newTextValue(evt) {
-      this.set('value', evt.detail.val);
-      this.set('displayValue',evt.detail.val);
-      this.set('selectedKey', evt.detail.key);
-
-      this.fire('change');
+      this.value =  evt.detail.val;
+      this.displayValue = evt.detail.val;
+      this.selectedKey =  evt.detail.key;
 
       evt.stopPropagation();
     }
@@ -158,7 +148,8 @@ class PxDropdown extends Polymer.Element {
     * This function is called when we have a maximum character width.
     */
     _newMaxContCharWidth(evt) {
-      this.set('_maxCharWidth', evt.detail.maxContCharacterWidth);
+      this._maxCharWidth = evt.detail.maxContCharacterWidth;
+
       evt.stopPropagation();
     }
     /**
@@ -177,7 +168,8 @@ class PxDropdown extends Polymer.Element {
     * This function checks whether the chevron should be visible or hidden.
     */
     _hideChevron(newValue) {
-      return (!this.hideChevron);
+      // return (!this.hideChevron);
+      return true;
     }
     /**
      * Returns whether this dropdown is within the path.
@@ -235,13 +227,16 @@ class PxDropdown extends Polymer.Element {
         content.close();
         this._reset();
       }
-      this.fire('px-dropdown-flip',evt);
+      // this.fire('px-dropdown-flip',evt);
+      // this.dispatchEvent(new CustomEvent('px-dropdown-flip', {bubbles: true, composed: true}));
+
     }
     /**
     * This function flips the "opened" property.
     */
     _flipOpened(evt) {
-      this._fireChevron('opened');
+      var chevron = this.shadowRoot.querySelector("px-dropdown-chevron");
+      chevron.opened = !chevron.opened;       
       this.opened = !this.opened;
 
       if(evt) {
@@ -252,12 +247,14 @@ class PxDropdown extends Polymer.Element {
     * This function checks to make sure the chevron exists, and if it does,
     * fire an event.
     */
-    _fireChevron(fireEvent) {
-      var chevron = this.shadowRoot.querySelector("px-dropdown-chevron");
-      if (chevron) {
-        chevron.fire(fireEvent);
-      }
-    }
+    // _fireChevron(fireEvent) {
+    //   var chevron = this.shadowRoot.querySelector("px-dropdown-chevron");
+    //   if (chevron) {
+    //     chevron.opened = !chevron.opened; 
+    //     chevron.dispatchEvent(new CustomEvent(fireEvent, {bubbles: true, composed: true}));
+
+    //   }
+    // }
     /**
     * This function returns the correct class for the chevron
     * depending on the state of the component.
@@ -272,7 +269,7 @@ class PxDropdown extends Polymer.Element {
       }
     }
     /**
-    * This function returns the correct class for the text
+    * This function returns the correct class for the hideChevrontext
     * depending on the state of the component.
     */
     _disabledClass(disabled) {
@@ -293,7 +290,8 @@ class PxDropdown extends Polymer.Element {
       but IE10 was having issues keeping up with it, so I split it into 2 functions.
       */
       if(!this.disabled) {
-        this._fireChevron('hoverOn');
+        var chevron = this.shadowRoot.querySelector("px-dropdown-chevron");
+        chevron.hover = true;    
         this.hover = true;
       }
     }
@@ -307,17 +305,23 @@ class PxDropdown extends Polymer.Element {
       but IE10 was having issues keeping up with it, so I split it into 2 functions.
       */
       if(!this.disabled) {
-        this._fireChevron('hoverOff');
+        var chevron = this.shadowRoot.querySelector("px-dropdown-chevron");
+        chevron.hover = false; 
         this.hover = false;
       }
+    }
+    /*
+     * getter that returns the '#dropdown' in 'px-dropdown-content' 
+     */
+    get _dropdown(){
+      return this.querySelector('px-dropdown-content').shadowRoot.querySelector('#dropdown')
     }
     /**
     * This function resets the above property as well as set
     * the top property to empty string - not 0, which causes firefox to miscalculate.
     */
     _reset() {
-      var content = this.querySelector('px-dropdown-content'),
-          dropdown = content.$.dropdown;
+      var dropdown = this._dropdown;
       this.above = false;
       dropdown.style.top = '';
     }
@@ -341,8 +345,7 @@ class PxDropdown extends Polymer.Element {
     */
     _positionOnContentAnchor() {
       if(this.contentAnchor) {
-        var content = this.querySelector('px-dropdown-content'),
-            dropdown = content.$.dropdown,
+        var dropdown = this._dropdown,
             anchorRect = this.contentAnchor.getBoundingClientRect(),
             dropcellRect = this.$.dropcell.getBoundingClientRect();
 
@@ -355,8 +358,7 @@ class PxDropdown extends Polymer.Element {
     * under the viewport.
     */
     _isoffScreenOnBottom() {
-      var content = this.querySelector('px-dropdown-content'),
-          dropdown = content.$.dropdown,
+      var dropdown = this._dropdown,
           dropdownRect = dropdown.getBoundingClientRect(),
           contentRect = content.getBoundingClientRect(),
           dropdownBottomPoint = dropdownRect.bottom;
@@ -366,9 +368,8 @@ class PxDropdown extends Polymer.Element {
     * This function appropriately positions the dropdown within the bounds given.
     */
     positionWithinBounds(parentBoundingRect) {
-      var content = this.querySelector('px-dropdown-content'),
-          dropdown = content.$.dropdown,
-          dropcell = this.contentAnchor ? this.contentAnchor : this.$.dropcell,
+      var dropdown = this._dropdown,
+          dropcell = this.contentAnchor ? this.contentAnchor : this.querySelector('#dropcell'),
           dropcellRect = dropcell.getClientRects()[0],
           dropdownRect,
           dropdownBottomPoint,
@@ -406,8 +407,7 @@ class PxDropdown extends Polymer.Element {
     * the dropcell, instead of the default below.
     */
     _setTopPosition() {
-      var content = this.querySelector('px-dropdown-content'),
-          dropdown = content.$.dropdown,
+      var dropdown = this._dropdown,
           dropdownRect = dropdown.getClientRects()[0],
           dropcell = this.contentAnchor ? this.contentAnchor : this.$.dropcell,
           dropcellRect = dropcell.getClientRects()[0],

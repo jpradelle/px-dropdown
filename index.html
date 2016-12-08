@@ -1,10 +1,11 @@
 <!doctype html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>px-dropdown Demo</title>
-  <link rel="stylesheet" type="text/css" href="css/px-dropdown-demo.css"/>
+  <link rel="stylesheet" type="text/css" href="css/px-dropdown-demo.css" />
   <!-- Import custom element. Note: see comment about relative paths to dependencies in the *.html file referenced below -->
   <script src="../webcomponentsjs/webcomponents-lite.js"></script>
 
@@ -15,13 +16,13 @@
 
   <!--<link rel="import" href="../px-api-viewer/px-api-viewer.html" />-->
   <!--<link rel="import" href="../px-tabs/px-tab-set.html" />-->
-  <link rel="import" href="px-dropdown.html"/>
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
+  <link rel="import" href="px-dropdown.html" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <!--<link rel="import" href="../px-demo-snippet/px-demo-snippet.html">-->
   <!--<link rel="import" href="../px-polymer-font-awesome/polymer-font-awesome.html" />-->
   <!-- Requires Webcomponents.js polyfill is provided by the page for browsers that don't support html imports -->
 
-  </head>
+</head>
 
 <body>
 
@@ -30,21 +31,27 @@
   <dom-bind>
     <template>
 
-    <div style="width: 150px;">
-      <px-dropdown
-        display-value="Select"
-        selected-key=""
-        >
-      </px-dropdown>
-    </div>
+      <div style="width: 150px;">
+        <px-dropdown display-value="Select">
+          <px-dropdown-content 
+            extend-dropdown='true' 
+            extend-dropdown-by='25' 
+            max-cont-character-width='10' 
+            items='[{"key":"1","val":"iPhone"},{"key":"2","val":"Android"},{"key":"3","val":"Blackberry"},{"key":"4","val":"Windows Phone"}]'>
+          </px-dropdown-content>
+        </px-dropdown>
+      </div>
 
-    <parent-example></parent-example>
 
 
-  </template>
-</dom-bind>
-<script>
+    </template>
+  </dom-bind>
+  <script>
+  document.addEventListener('my-custom-click-event', function(evt){
+    console.log('Document handling event...')
+  }.bind(this))
 </script>
 
 </body>
+
 </html>
