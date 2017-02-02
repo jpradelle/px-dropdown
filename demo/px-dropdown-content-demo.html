@@ -67,6 +67,8 @@
       </px-demo-component-snippet>
     </px-demo-interactive>
 
+    <button on-tap="_fireEventToChangeActiveDemo">CLICK TO CHANGE TO px-dropdown PARENT</button>
+
     <!-- API Viewer -->
     <px-demo-api-viewer source="px-dropdown-content"></px-demo-api-viewer>
 
@@ -168,6 +170,10 @@
 
     ready: function () {
 
+    },
+
+    _fireEventToChangeActiveDemo: function() {
+      this.fire('px-demo-active-should-change', {newName:'px-dropdown'})
     }
   });
 </script>

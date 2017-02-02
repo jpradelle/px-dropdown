@@ -17,7 +17,7 @@
     <style include="px-dark-theme-styles" is="custom-style"></style>
 
     <!-- Demo list/view change entrypoint -->
-    <px-demo-collection demos="{{demos}}"></px-demo-collection>
+    <px-demo-collection demos="{{demos}}" chosen-demo-name="{{chosenDemoName}}"></px-demo-collection>
 
     <!-- Code Editor -->
     <px-demo-code-editor props="{{props}}"></px-demo-code-editor>
@@ -68,6 +68,15 @@
       chosenDemoName: {
         type: String
       }
+    },
+
+    listeners: {
+      'px-demo-active-should-change' : '_handleActiveChange'
+    },
+
+    _handleActiveChange: function(evt) {
+      debugger;
+      this.set('chosenDemoName', evt.detail.newName);
     }
   });
 </script>
