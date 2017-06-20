@@ -1,0 +1,90 @@
+  <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>px-dropdown simple demo</title>
+  <script src="../../webcomponentsjs/webcomponents.min.js"></script>
+  <link rel="import" href="../../polymer/polymer-mini.html" />
+  <link rel="import" href="../px-dropdown.html" />
+
+  <link rel="import" href="../../px-theme/px-theme-styles.html">
+  <style include="px-theme-styles" is="custom-style"></style>
+
+</head>
+
+<body>
+  <template id="just-for-demo" is="dom-bind" >
+    <!--<p>selected binding: {{outputBinding}}</p>
+    <px-dropdown
+      items='[[items]]'
+      search-mode
+      select-by="val"
+      selected="{{outputBinding}}">
+    </px-dropdown>
+
+    <p style="padding-top: 50px;">selected eventlistener: {{outputEvent}}</p>
+    <px-dropdown
+      items='[[items]]'
+      search-mode
+      select-by="val">
+    </px-dropdown>-->
+
+    <p style="padding-top: 50px;">no output</p>
+    <px-dropdown
+      items='[[items]]'
+      search-mode
+      select-by="val">
+    </px-dropdown>
+  </template>
+<script>
+  window.addEventListener('WebComponentsReady', function() {
+    var template = document.querySelector('template[is=dom-bind]'),
+        items = [
+          "Etc/GMT",
+          "Etc/GMT+0",
+          "Etc/GMT+1",
+          "Etc/GMT+10",
+          "Etc/GMT+11",
+          "Etc/GMT+12",
+          "Etc/GMT+2",
+          "Etc/GMT+3",
+          "Etc/GMT+4",
+          "Etc/GMT+5",
+          "Etc/GMT+6",
+          "Etc/GMT+7",
+          "Etc/GMT+8",
+          "Etc/GMT+9",
+          "Etc/GMT-0",
+          "Etc/GMT-1",
+          "Etc/GMT-10",
+          "Etc/GMT-11",
+          "Etc/GMT-12",
+          "Etc/GMT-13",
+          "Etc/GMT-14",
+          "Etc/GMT-2",
+          "Etc/GMT-3",
+          "Etc/GMT-4",
+          "Etc/GMT-5",
+          "Etc/GMT-6",
+          "Etc/GMT-7",
+          "Etc/GMT-8",
+          "Etc/GMT-9",
+          "Etc/GMT0",
+          "UCT",
+          "UTC",
+        ],
+        outputBinding = "",
+        outputEvent = "";
+
+    template.outputBinding = outputBinding;
+    template.outputEvent = outputEvent;
+    template.items = items;
+
+    window.addEventListener('px-dropdown-selection-changed', function(e){
+      template.outputEvent = e.detail.val;
+    });
+  });
+
+</script>
+</body>
+</html>
