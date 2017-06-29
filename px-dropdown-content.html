@@ -246,6 +246,9 @@ Element providing the content for the px-dropdown element
       'px-tooltip-request-show': '_tooltipShow',
       'px-tooltip-hide': '_tooltipHide'
     },
+    observers: [
+      '_syncView(computedItems, computedItems.*)'
+    ],
     attached: function () {
       this._contentScrollHandler = this._onContentScroll.bind(this);
       this.$.dropdown.addEventListener('scroll', this._contentScrollHandler);
@@ -737,6 +740,18 @@ Element providing the content for the px-dropdown element
           this.$.dropdown.scrollTop -= ((this.$.dropdown.scrollTop - listItem.offsetTop)) + bufferPadding;
         }
       }
-    }
+    },
+    /**
+     * Synchronise checkboxes when state changes in model.
+     * @param computedItems
+     * @private
+     */
+    _syncView: function (computedItems) {
+      Array.from(this.root.querySelectorAll('#list input[type=checkbox]'))
+          .forEach(function (input) {
+            if (computedItems[this.$.dropdownItems.indexForElement(input)].checked !== input.checked)
+              input.checked = computedItems[this.$.dropdownItems.indexForElement(input)].checked;
+          }, this);
+    },
   });
 </script>
