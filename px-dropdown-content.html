@@ -179,7 +179,7 @@ Element providing the content for the px-dropdown element
        */
       extendDropdownBy: {
         type: Number,
-        value: 15
+        value: null
       },
       /**
        * An attribute which specifies whether the dropdown is
@@ -466,7 +466,10 @@ Element providing the content for the px-dropdown element
      */
     _setWidth: function () {
       if (this.extendDropdown) {
-        this.$.dropdown.style.width = this.dropCellWidth + parseInt(this.extendDropdownBy) + 'px';
+        if (this.extendDropdownBy === null)
+          this.$.dropdown.style.width = 'inherit';
+        else
+          this.$.dropdown.style.width = this.dropCellWidth + parseInt(this.extendDropdownBy) + 'px';
       }
       else {
         this.$.dropdown.style.width = this.dropCellWidth + 'px';
